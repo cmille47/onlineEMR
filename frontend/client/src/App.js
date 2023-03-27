@@ -23,7 +23,7 @@ function App() {
   // defines what is seen on webpage
   // first checks if data is undefined, if so, it displays "Loading..."
   // basically if the api created in the backend is fetched or not
-  // if so, display the members
+  // if so, display the members Uses ? : instead of if else
   return (
     <div>
         {(typeof data.members === "undefined") ? (
