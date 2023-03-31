@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react'
 
 function App() {
-
   // already discussed. This creates a state variable called data
   // and a function called setData to update it.
   const [data, setData] = useState([{}]);
@@ -30,7 +29,7 @@ function App() {
           <p>Loading...</p>
         ) : (
           data.members.map((member, index) => (
-            <p key={index}>{member}</p>
+            <p key={index}>{index} {member}</p>
           ))
         )}
     </div>

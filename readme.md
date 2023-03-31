@@ -10,3 +10,9 @@ What i did:
 7. added proxy line to package.json file
 8. created app.js file
 8a. look at app.js file for explanation  
+
+
+
+INSTALLS:
+pip3 install cx_Oracle or we can use sqllite, sqlalchemy, etc
+pip3 install flask
