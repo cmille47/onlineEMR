@@ -1,23 +1,20 @@
 .container {
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 50vh;
+    margin-top:40vh;
+    z-index:9999;
 }
 
-.logo {
-    position: relative;
-}
 
 .text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     font-size: 4rem;
     font-weight: bold;
-    color: #000;
+    text-align: center;
+    color: #ffffff;
+    margin-bottom: 2rem;
 }
 
 .centered {
@@ -25,5 +22,5 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 2rem;
+    margin-top:2rem;
 }

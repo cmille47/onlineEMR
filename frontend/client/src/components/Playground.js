@@ -100,7 +100,6 @@ export default function App() {
     }}
     style={{ width: "500px", height: "500px" }}
     />
-    <h1 style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", zIndex: 1, color: "#fff", textShadow: "0px 0px 10px #fff" }}>Hello Coders!</h1>
     </div>
     
   );

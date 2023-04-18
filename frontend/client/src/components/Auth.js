@@ -6,7 +6,7 @@ export default function Auth(props) {
     const [password, setPassword] = useState('');
   
     const handleSubmit = (e) => {
-      e.preventDefault(); 
+      e.preventDefault();
       fetch('/login_info', {
         method: 'POST',
         headers: {
@@ -27,7 +27,6 @@ export default function Auth(props) {
         console.log(error);
       });
     }
-
     return (
       <div className="Auth-form-container">
         <form className="Auth-form" onSubmit={handleSubmit}>
