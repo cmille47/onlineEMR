@@ -27,9 +27,9 @@ function WelcomePage() {
                 init={particlesInit}
                 params={particlesConfig}/>
             </div>
-            <div className="container">
-                <div className="text">Welcome To MedDb</div>
-                <div className='centered'>
+            <div className="welcome_container">
+                <div className="welcome_text">Welcome To MedDb</div>
+                <div className='welcome_centered'>
                     <Link to="/auth">
                         <button className="btn btn-primary"
                         >Login

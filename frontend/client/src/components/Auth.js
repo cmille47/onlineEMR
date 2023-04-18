@@ -1,9 +1,14 @@
-import React, { useState } from "react"
+import React, { useState, createContext } from "react"
+import { useNavigate } from 'react-router-dom';
 import "./Auth.css"
+const authContext = createContext()
+export default authContext;
 
-export default function Auth(props) {
+function Auth(props) {
+    const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+
   
     const handleSubmit = (e) => {
       e.preventDefault();
@@ -21,12 +26,17 @@ export default function Auth(props) {
         return response.json();
       })
       .then((data) => {
-        console.log(data);
+        console.log(data)
+        if (data.success) {
+          navigate('/dashboard');
+        }
       })
       .catch((error) => {
         console.log(error);
       });
     }
+
+
     return (
       <div className="Auth-form-container">
         <form className="Auth-form" onSubmit={handleSubmit}>
@@ -62,10 +72,12 @@ export default function Auth(props) {
               </button>
             </div>
             <p className="forgot-password text-center mt-2">
-              Forgot <a href="#">password?</a>
+              Forgot <a href="/">password?</a>
             </p>
           </div>
         </form>
       </div>
     )
   }
+
+export {Auth};

@@ -1,4 +1,4 @@
-.container {
+.welcome_container {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -9,7 +9,7 @@
 }
 
 
-.text {
+.welcome_text {
     font-size: 4rem;
     font-weight: bold;
     text-align: center;
@@ -17,7 +17,7 @@
     margin-bottom: 2rem;
 }
 
-.centered {
+.welcome_centered {
     display: flex;
     flex-direction: column;
     justify-content: center;
