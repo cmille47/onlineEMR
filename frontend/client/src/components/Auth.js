@@ -8,6 +8,7 @@ function Auth(props) {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const name = 'Darius'; // name idea for passing vars between pages
 
   
     const handleSubmit = (e) => {
@@ -28,7 +29,9 @@ function Auth(props) {
       .then((data) => {
         console.log(data)
         if (data.success) {
-          navigate('/dashboard');
+          navigate('/dashboard', 
+            {state: {name: name}}
+          );
         }
       })
       .catch((error) => {

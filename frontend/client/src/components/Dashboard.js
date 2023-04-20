@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate, Outlet } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import BaseNavbar from './BaseNavbar';
 
 
@@ -7,11 +7,21 @@ import BaseNavbar from './BaseNavbar';
 function Dashboard(props) {
 
   const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const name = "Christian";
-
+  const location = useLocation();
   const navigate = useNavigate();
 
-  // NEED TO IMPLEMENT THIS USER AUTHENTICATION STUFF
+  // object destructuring in case name is undefined
+  const name = location?.state?.name;
+
+  // prevents unlogged in users to access dashboard page
+  useEffect(() => {
+    if (name == null) {
+      setIsLoggedIn(false);
+    }
+  }, [name]);
+
+
+  // NEED TO IMPLEMENT USER AUTHENTICATION STUFF
   if (!isLoggedIn) {
     // if user is not logged in, redirect to login page
     navigate('/auth');
