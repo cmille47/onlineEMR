@@ -16,8 +16,7 @@ function Dashboard(props) {
     // if user is not logged in, redirect to login page
     navigate('/auth');
   }
-
-
+  
   return (
     <div>
       <BaseNavbar/>
