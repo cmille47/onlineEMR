@@ -1,0 +1,26 @@
+.welcome_container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top:40vh;
+    z-index:9999;
+}
+
+
+.welcome_text {
+    font-size: 4rem;
+    font-weight: bold;
+    text-align: center;
+    color: #ffffff;
+    margin-bottom: 2rem;
+}
+
+.welcome_centered {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top:2rem;
+}
