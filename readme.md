@@ -25,3 +25,5 @@ In addition, if the item in the dropdown is clicked, it will log the value in th
 I also added a card that will be used to hold the view data button which will redirect to the querying page. This should be simple. 
 
 One last thing, in the dashboard, I have not added much error checking/results validation. I will do this later once everything is working. 
+
+Wait one more thing, I downloaded this package called axios using npm install axios. It makes doing api requests easier. I hpe this do not be an issue
