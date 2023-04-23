@@ -5,6 +5,33 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+search_results = [
+    {'id': 1, 'name': 'Item 1'},
+    {'id': 2, 'name': 'Item 2'},
+    {'id': 3, 'name': 'Item 3'},
+    {'id': 4, 'name': 'Item 4'},
+    {'id': 5, 'name': 'Item 5'}
+]
+
+
+@app.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('q', '')
+    results = []
+
+    # Simple search algorithm that returns the first 5 items that contain the query in their name
+    for item in search_results:
+        if query.lower() in item['name'].lower():
+            results.append(item)
+            if len(results) == 5:
+                break
+
+    # return jsonify(results)
+
+    return jsonify(search_results)
+
+
+
 # example of getting data from database for login
 @app.route('/login_info', methods=['POST']) 
 def login_info():

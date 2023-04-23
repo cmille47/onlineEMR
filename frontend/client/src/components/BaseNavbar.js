@@ -25,7 +25,13 @@ function BaseNavbar() {
             </Nav>
             <Nav className="m1-auto">
                 <button className="btn btn-primary"
-                    onClick={handleLogout}>
+                    onClick={handleLogout}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            e.preventDefault();
+                        }
+                    }}
+                    >
                     Logout
                 </button>
             </Nav>
