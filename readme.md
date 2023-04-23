@@ -16,3 +16,12 @@ What i did:
 INSTALLS:
 pip3 install cx_Oracle or we can use sqllite, sqlalchemy, etc
 pip3 install flask
+
+4/23 changes:
+I worked primarily on the dashboard. Added 2 cards. One will hold patient search option. Any character typed activates a flask backend api request. I defined a new api to handle this that returns some dummy results. This api is in the flask server file.
+
+In addition, if the item in the dropdown is clicked, it will log the value in the console. Will use this feature to implement pulling up the specified patients data in the patient chart page. 
+
+I also added a card that will be used to hold the view data button which will redirect to the querying page. This should be simple. 
+
+One last thing, in the dashboard, I have not added much error checking/results validation. I will do this later once everything is working. 
