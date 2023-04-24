@@ -9,7 +9,8 @@ import {
   Card, 
   Form, 
   FormControl, 
-  Dropdown } from "react-bootstrap";
+  Dropdown,
+  Button } from "react-bootstrap";
 
 
 // useLocation can be used to grab data
@@ -57,47 +58,63 @@ function Dashboard(props) {
     console.log(value);
   };
 
+  const handleDataButton = () => {
+    navigate('/data', 
+      {state: {name: name}}
+    );
+  };
+
+
+  const handleNewPatientButton = () => {
+    navigate('/chart',
+      {state: {name: name}}
+    );
+  };
+
   return (
-    <div>
+  <div>
     <div>
       <BaseNavbar/>
       <h1>Welcome, {name}</h1>
       <Outlet />
     </div>
     <Container>
-    <Row className="justify-content-center">
-    <Col md={6} className="mb-4">
-    <Card>
-      <Card.Body>
-        <Card.Title>Card 1</Card.Title>
-          <Form>
-            <FormControl type="text" placeholder="Search" className="mr-sm-2" value={searchQuery} onChange={handleSearchChange} />
-          </Form>
-          {searchResults.length > 0 && (        
-            <Dropdown>
-              {searchResults.map((result) => (
-                <Dropdown.Item key={result.id} onClick={() => handleItemClick(result)}>
-                  {result.name}
-                </Dropdown.Item>
-              ))}
-            </Dropdown>
-          )}
-      </Card.Body>
-    </Card>
-    </Col>
-    <Col md={6} className="mb-4">
-      <Card>
-        <Card.Body>
-          <Card.Title>Card 1</Card.Title>
-          <Card.Text>
-            This is the first card.
-          </Card.Text>
-        </Card.Body>
-      </Card>
-    </Col>
-  </Row>
-</Container>
-    </div>
+      <Row className="justify-content-center my-4">
+        <Col md={6}>
+          <Card>
+            <Card.Body>
+              <Card.Title>Search For Patient by Name or ID</Card.Title>
+              <Form>
+                <FormControl type="text" placeholder="Search" className="mr-sm-2" value={searchQuery} onChange={handleSearchChange} />
+              </Form>
+              {searchResults.length > 0 && (        
+                <Dropdown>
+                  <Dropdown.Item disabled>ID: Name, DOB</Dropdown.Item>
+                  {searchResults.map((result) => (
+                    <Dropdown.Item key={result.id} onClick={() => handleItemClick(result)}>
+                      {result.id}: {result.name}, {result.dob}
+                    </Dropdown.Item>
+                  ))}
+                </Dropdown>
+              )}
+              <div className="text-center p-3">
+                <Button variant="primary" onClick={handleNewPatientButton}>Create New Patient</Button>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+      <Row className="justify-content-center my-4">
+        <Col md={6}>
+          <Card>
+            <Card.Body className="text-center">
+              <Button variant="primary" onClick={handleDataButton}>View Patient Data</Button>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
+  </div>
   );
 }
 

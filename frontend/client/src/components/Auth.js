@@ -1,8 +1,6 @@
 import React, { useState, createContext } from "react"
 import { useNavigate } from 'react-router-dom';
 import "./Auth.css"
-const authContext = createContext()
-export default authContext;
 
 function Auth(props) {
     const navigate = useNavigate();
