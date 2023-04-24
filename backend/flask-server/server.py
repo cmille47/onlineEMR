@@ -6,11 +6,11 @@ app = Flask(__name__)
 CORS(app)
 
 search_results = [
-    {'id': 1, 'name': 'Item 1'},
-    {'id': 2, 'name': 'Item 2'},
-    {'id': 3, 'name': 'Item 3'},
-    {'id': 4, 'name': 'Item 4'},
-    {'id': 5, 'name': 'Item 5'}
+    {'id': 1, 'name': 'John Doe', 'dob': '01/01/1990'},
+    {'id': 2, 'name': 'Lebron James', 'dob': '12/30/1984'},
+    {'id': 3, 'name': 'Jeff Bezos', 'dob': '01/12/1964'},
+    {'id': 4, 'name': 'Jesus Christ', 'dob': '12/25/0000'},
+    {'id': 5, 'name': 'Michael Jordan', 'dob': '02/17/1963'},
 ]
 
 
@@ -56,15 +56,6 @@ def login_info():
 
 
     return response
-
-# members API route
-@app.route('/members')
-def members():
-    return {"members": ['member1', 'member2', 'member3']}
-
-@app.route('/')
-def index():
-    return 'hello world'
 
 if __name__=='__main__':
     app.run(debug=True)
