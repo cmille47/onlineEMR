@@ -1,29 +1,8 @@
-What i did:
+4/24 fun!:
+adjusted layout of dashboard. Centered button
+Side by side card elements. May need to add something below? Maybe like a tutorial/text section telling them how to use it?
 
-1. created anaconda environment and installed python
-2. created folder for front end and backend. In backend I create a server.py file for flask
-3. in frontend, ran 'npx create-react-app' client which installed a whole host of packages and created client folder
-4. installed flask: pip3 install flask
-5. setup backend in server.py file. created basic members function for a members webpage accessible from localhost
-6. removed some 'unncessary files': app.test.js, index.css, logo.svg.
-6a. removed any mentions of those files from index.js file
-7. added proxy line to package.json file
-8. created app.js file
-8a. look at app.js file for explanation  
+Went to patient chart and began changing inner components to editable fields. Need to implement a save button probably. Huh. For the complaints and such we can make fill in fields similar to the dashboard that can make a request and create a dropdown of most used complaints/medications/etc based off what is already in the database. Autofilling feature would be really cool.
 
+Only got cheif complaint/diagonosis done
 
-
-INSTALLS:
-pip3 install cx_Oracle or we can use sqllite, sqlalchemy, etc
-pip3 install flask
-
-4/23 changes:
-I worked primarily on the dashboard. Added 2 cards. One will hold patient search option. Any character typed activates a flask backend api request. I defined a new api to handle this that returns some dummy results. This api is in the flask server file.
-
-In addition, if the item in the dropdown is clicked, it will log the value in the console. Will use this feature to implement pulling up the specified patients data in the patient chart page. 
-
-I also added a card that will be used to hold the view data button which will redirect to the querying page. This should be simple. 
-
-One last thing, in the dashboard, I have not added much error checking/results validation. I will do this later once everything is working. 
-
-Wait one more thing, I downloaded this package called axios using npm install axios. It makes doing api requests easier. I hpe this do not be an issue

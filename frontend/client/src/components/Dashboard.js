@@ -81,7 +81,7 @@ function Dashboard(props) {
     <Container>
       <Row className="justify-content-center my-4">
         <Col md={6}>
-          <Card>
+          <Card style = {{height:"100%"}}>
             <Card.Body>
               <Card.Title>Search For Patient by Name or ID</Card.Title>
               <Form>
@@ -103,11 +103,9 @@ function Dashboard(props) {
             </Card.Body>
           </Card>
         </Col>
-      </Row>
-      <Row className="justify-content-center my-4">
         <Col md={6}>
-          <Card>
-            <Card.Body className="text-center">
+          <Card style={{height:"100%"}}>
+            <Card.Body className="d-flex align-items-center justify-content-center" style={{height: '100%'}}>
               <Button variant="primary" onClick={handleDataButton}>View Patient Data</Button>
             </Card.Body>
           </Card>

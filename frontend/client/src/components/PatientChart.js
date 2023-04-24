@@ -7,7 +7,9 @@ import {
     Col, 
     Tabs, 
     Tab,
-    Button } from 'react-bootstrap';
+    Button, 
+    Form,
+    } from 'react-bootstrap';
 
 // create patient chart page
 function PatientChart(props) {
@@ -42,9 +44,9 @@ function PatientChart(props) {
                                 <Dropdown onSelect={handleDateSelect} className="mr-3">
                                     <Dropdown.Toggle>{selectedDate}</Dropdown.Toggle>
                                     <Dropdown.Menu>
-                                    <Dropdown.Item eventKey="2023-05-01">May 1, 2023</Dropdown.Item>
-                                    <Dropdown.Item eventKey="2023-05-02">May 2, 2023</Dropdown.Item>
-                                    <Dropdown.Item eventKey="2023-05-03">May 3, 2023</Dropdown.Item>
+                                        <Dropdown.Item eventKey="2023-05-01">May 1, 2023</Dropdown.Item>
+                                        <Dropdown.Item eventKey="2023-05-02">May 2, 2023</Dropdown.Item>
+                                        <Dropdown.Item eventKey="2023-05-03">May 3, 2023</Dropdown.Item>
                                     </Dropdown.Menu>
                                 </Dropdown>
                                 <Button variant="primary" className="m1-auto" onClick={handleNewVisit}>Create New Visit</Button>
@@ -53,7 +55,16 @@ function PatientChart(props) {
                         <Card.Body>
                             <Card>
                             <Card.Body>
-                                <p>Inner Card Component</p>
+                                <Col md={6}>
+                                    <Form.Group controlID="chiefComplaint">
+                                        <Form.Label>Chief Complaint</Form.Label>
+                                        <Form.Control type="text" placeholder="None" />
+                                    </Form.Group>
+                                    <Form.Group controlID="diagnosis">
+                                        <Form.Label>Diagnosis</Form.Label>
+                                        <Form.Control type="text" placeholder="None" />
+                                    </Form.Group>
+                                </Col>
                             </Card.Body>
                             </Card>
                         </Card.Body>
