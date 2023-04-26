@@ -11,7 +11,7 @@ function Auth(props) {
   
     const handleSubmit = (e) => {
       e.preventDefault();
-      fetch('/login_info', {
+      fetch('http://3.95.80.50:8005/log-in/authenticate.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

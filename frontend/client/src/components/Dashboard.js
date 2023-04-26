@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation, Outlet } from 'react-router-dom';
+import { useNavigate, useLocation, Outlet, isRouteErrorResponse } from 'react-router-dom';
 import BaseNavbar from './BaseNavbar';
 import axios from 'axios';
 import { 
@@ -24,35 +24,41 @@ function Dashboard(props) {
   const navigate = useNavigate();
   const name = location?.state?.name;
 
-  useEffect(() => {
-    if (name == null) {
-      setIsLoggedIn(false);
-      navigate('/auth');
-    } else {
-      setIsLoggedIn(true);
-    }
-    setIsRendered(true);
-  }, [name, navigate]);
+  // useEffect(() => {
+  //   if (name == null) {
+  //     setIsLoggedIn(false);
+  //     navigate('/auth');
+  //   } else {
+  //     setIsLoggedIn(true);
+  //   }
+  //   setIsRendered(true);
+  // }, [name, navigate]);
 
-  if (!isRendered) {
-    return null;
-  }
+  // if (!isRendered) {
+  //   return null;
+  // }
 
   const handleSearchChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
     if (query.length > 0) {
-      axios.get(`/search?q=${query}`)
-        .then((response) => {
-          setSearchResults(response.data.slice(0, 5)); // limit to first 5 results
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      fetch(`http://3.95.80.50:8005/dashboard/search2.php?q=${query}`, {
+        method: 'GET'
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data)
+        setSearchResults(data.slice(0, 5)); // limit to first 5 results
+      })
+      .catch(error => {
+        console.log(error);
+      });
     } else {
       setSearchResults([]);
-    }
+    }    
   };
+
+  console.log()
 
   const handleItemClick = (value) => {
     console.log(value);
@@ -91,8 +97,8 @@ function Dashboard(props) {
                 <Dropdown>
                   <Dropdown.Item disabled>ID: Name, DOB</Dropdown.Item>
                   {searchResults.map((result) => (
-                    <Dropdown.Item key={result.id} onClick={() => handleItemClick(result)}>
-                      {result.id}: {result.name}, {result.dob}
+                    <Dropdown.Item key={result.username} onClick={() => handleItemClick(result)}>
+                      {result.username}: {result.password}
                     </Dropdown.Item>
                   ))}
                 </Dropdown>
