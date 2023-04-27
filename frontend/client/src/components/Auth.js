@@ -24,6 +24,17 @@ function Auth(props) {
       .then((response) => {
         return response.json();
       })
+
+      // TO USE VAR_DUMP AND SUCH IN PHP COMMENT ABOVE AND USE THIS
+      // .then((response) => {
+      //   // Check the response status
+      //   if (response.ok) {
+      //     // Handle the response as text
+      //     return response.text();
+      //   } else {
+      //     throw new Error('Network response was not ok.');
+      //   }
+      // })
       .then((data) => {
         console.log(data)
         if (data.success) {
@@ -44,11 +55,11 @@ function Auth(props) {
           <div className="Auth-form-content">
             <h3 className="Auth-form-title">Sign In</h3>
             <div className="form-group mt-3">
-              <label>Email address</label>
+              <label>Username</label>
               <input
-                type="email"
+                type="username"
                 className="form-control mt-1"
-                placeholder="Enter email"
+                placeholder="Enter username"
                 name="username" 
                 id="username" 
                 value={username} 

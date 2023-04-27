@@ -9,35 +9,74 @@ import {
     Tab,
     Button, 
     Form,
-    } from 'react-bootstrap';
+    Accordion,
+    ListGroup} from 'react-bootstrap';
+import { tab } from "@testing-library/user-event/dist/tab";
 
 // create patient chart page
 function PatientChart(props) {
-    const [selectedDate, setSelectedDate] = useState('Select Visit Date');
     const [visitResults, setVisitResults] = useState([]);
     const [visitData, setVisitData] = useState([]);
+    const [selectedGender, setSelectedGender] = useState('Gender');
+    const [selectedDate, setSelectedDate] = useState('View Prior Visit');
+    const [selectedDoctor, setSelectedDoctor] = useState('Doctor');
+    const [selectedType, setSelectedType] = useState('Visit Type');
+    const [PreExistingList, setPreExistingList] = useState(['item1', 'item2', 'item3']);
 
 
-    // need to add that if new patient is selected, 
-    // that is passed along and new patient id is generated
-    // also need to add all the editable fields. We have the cards/basic layout
-    // but need each field to be editable and to be able to save changes
+    // ALL THESE HANDLES ARE FOR THE DROPDOWNS. ESSENTIALLY JUST MAKE SURE DROPDOWN BUTTON UPDATES TO WHAT IS CHOSEN
+    const handleGenderSelect = (eventKey) => {
+        setSelectedGender(eventKey); // update state when an item is selected
+      };
+
+    const handleDoctorSelect = (eventKey) => {
+        setSelectedDoctor(eventKey);
+    }
+
+    const handleTypeSelect = (eventKey) => {
+        setSelectedType(eventKey);
+    }
 
     // handle date selection for getting data for a specific visit
     const handleDateSelect = (eventKey) => {
-        console.log(eventKey)
-        get_visit_info('0', eventKey);
+        console.log(eventKey);
+        const [date, id] = eventKey.split(':');
+        setSelectedDate(date);
+        get_visit_info('0', id);
     };
 
-    // handle creating a new visit
+    // BUTTON HANDLE FOR NEW VISIT IF CLICKED
     const handleNewVisit = () => {
         const date = new Date();
         const dateString = date.toISOString().split('T')[0];
         console.log(dateString);
     };
 
+    const handleListChange = (listItems, setListItems, action, index) => {
+        switch(action) {
+          case 'edit':
+            // prompt user for new value and update list
+            const newValue = prompt('Enter new value:');
+            const newList = [...listItems];
+            if (newValue !== null ){
+                newList[index] = newValue;
+            };
+            setListItems(newList);
+            break;
+          case 'delete':
+            // remove item from list
+            const filteredList = listItems.filter((item, i) => i !== index);
+            setListItems(filteredList);
+            break;
+          default:
+            console.log('Invalid action:', action);
+        }
+      };
+
+    console.log(PreExistingList);
+
     // if patient has prior visits, fetch whatever selected date is and fill in
-    // the info
+    // THE BIG API REQUEST FOR PRETTY MUCH EVERYTHING
     const get_visit_info = (patient_id, visit_id) => {
         fetch(
             `http://3.95.80.50:8005/patientchart/chart.php?endpoint=get_visit_info&patient_id=${patient_id}&visit_id=${visit_id}`, {
@@ -100,10 +139,10 @@ function PatientChart(props) {
                             <h3>Visit Info</h3>
                             <div className="d-flex justify-content-between">
                             <Dropdown onSelect={handleDateSelect} className="mr-3">
-                                <Dropdown.Toggle>View Prior Visit</Dropdown.Toggle>
+                                <Dropdown.Toggle>{selectedDate}</Dropdown.Toggle>
                                 <Dropdown.Menu style={{ maxHeight: '100px', overflowY: 'auto' }}>
                                     {sortedResults.map((result) => (
-                                    <Dropdown.Item key={result.visit_id} eventKey={result.visit_id}>
+                                    <Dropdown.Item key={result.visit_id} eventKey={`${result.visit_date}:${result.visit_id}`}>
                                         {result.visit_date}
                                     </Dropdown.Item>
                                     ))}
@@ -114,34 +153,125 @@ function PatientChart(props) {
                         </Card.Header>
                         <Card.Body>
                             <Card>
-                            <Card.Body>
-                                <Col md={6}>
-                                    <Form.Group controlid="chiefComplaint">
-                                        <Form.Label>Chief Complaint</Form.Label>
-                                        <Form.Control type="text" placeholder="None" />
-                                    </Form.Group>
-                                    <Form.Group controlid="diagnosis">
-                                        <Form.Label>Diagnosis</Form.Label>
-                                        <Form.Control type="text" placeholder="None" />
-                                    </Form.Group>
-                                </Col>
-                            </Card.Body>
+                                <Card.Body>
+                                    <Row>
+                                        <Col md={8}>
+                                            <Form.Group controlId="chiefComplaint">
+                                                <Form.Label>Chief Complaint</Form.Label>
+                                                <Form.Control type="text" placeholder="None" />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col md={4} className="d-flex align-items-center justify-content-center">
+                                            <Row>
+                                                <Col>
+                                                    <h6 style={{marginTop:'10px', marginLeft:'10px'}}>Type:</h6>      
+                                                </Col>
+                                                <Col>
+                                                    <Dropdown onSelect={handleTypeSelect}>
+                                                        <Dropdown.Toggle style={{ backgroundColor: '#f8f9fa', borderColor: '#f8f9fa', color: '#212529' }}>
+                                                            {selectedType}                                            
+                                                        </Dropdown.Toggle>
+                                                        <Dropdown.Menu>
+                                                            <Dropdown.Item eventKey="Checkup">Checkup</Dropdown.Item>
+                                                            <Dropdown.Item eventKey="Emergency">Emergency</Dropdown.Item>
+                                                            <Dropdown.Item eventKey="Procedure">Procedure</Dropdown.Item>
+                                                            <Dropdown.Item eventKey="Surgery">Surgery</Dropdown.Item>
+                                                        </Dropdown.Menu>
+                                                    </Dropdown>
+                                                </Col>
+                                            </Row>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col md={8}>
+                                            <Form.Group controlid="diagnosis">
+                                                <Form.Label>Diagnosis</Form.Label>
+                                                <Form.Control type="text" placeholder="None" />
+                                            </Form.Group>
+                                        </Col>
+                                        <Col md={4} className="d-flex align-items-center justify-content-center">
+                                            <Row>
+                                                <Col>
+                                                    <h6 style={{marginTop:'10px'}}>Doctor:</h6>
+                                                </Col>
+                                                <Col>
+                                                    <Dropdown onSelect={handleDoctorSelect}>
+                                                        <Dropdown.Toggle style={{ backgroundColor: '#f8f9fa', borderColor: '#f8f9fa', color: '#212529' }}>
+                                                            {selectedDoctor}                                            
+                                                        </Dropdown.Toggle>
+                                                        <Dropdown.Menu>
+                                                            <Dropdown.Item eventKey="Dr. Smith">Dr. Smith</Dropdown.Item>
+                                                            <Dropdown.Item eventKey="Dr. Jones">Dr. Jones</Dropdown.Item>
+                                                            <Dropdown.Item eventKey="Dr. Davis">Dr. Davis</Dropdown.Item>
+                                                        </Dropdown.Menu>
+                                                    </Dropdown>
+                                                </Col>
+                                            </Row>
+                                        </Col>
+                                    </Row>
+                                </Card.Body>
                             </Card>
                         </Card.Body>
                     </Card>
                 </Col>
                 <Col md={4}>
                     <Card style={{height:'100%'}}>
-                    <Card.Header>
-                        <h3>Patient Info</h3>
-                    </Card.Header>
-                    <Card.Body>
-                        <Card>
+                        <Card.Header>
+                            <h3>Patient Info</h3>
+                        </Card.Header>
                         <Card.Body>
-                            <p>Inner Card Component</p>
+                            <Row>
+                                <Col>
+                                {/* EXAMPLE OF FETCHING DATA FROM API AND IMPLEMENTING HERE!!! */}
+                                    <h6 style={{marginTop:'10px'}}>ID: {visitData.p_id}</h6>
+                                </Col>
+                                <Col>
+                                    <Dropdown onSelect={handleGenderSelect}>
+                                        <Dropdown.Toggle style={{ backgroundColor: '#f8f9fa', borderColor: '#f8f9fa', color: '#212529' }}>
+                                            {selectedGender}                                            
+                                        </Dropdown.Toggle>
+                                        <Dropdown.Menu>
+                                            <Dropdown.Item eventKey="Male">Male</Dropdown.Item>
+                                            <Dropdown.Item eventKey="Female">Female</Dropdown.Item>
+                                            <Dropdown.Item eventKey="Other">Other</Dropdown.Item>
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                </Col>
+                            </Row>
+                            <Form.Group controlId="patientName">
+                                <Form.Label>Name</Form.Label>
+                                <Form.Control type="text" placeholder="None" />
+                            </Form.Group>
+                            <Form.Group controlId="patientDOB">
+                                <Form.Label>DOB</Form.Label>
+                                <Form.Control type="text" placeholder="None" />
+                            </Form.Group>
+                            <div style={{marginTop: '20px'}}>
+                                <Accordion defaultActiveKey="0">
+                                    <Accordion.Item eventkey="0">
+                                        <Accordion.Header>More Info</Accordion.Header>
+                                        <Accordion.Body>
+                                        <Form.Group controlId="patientRace">
+                                            <Form.Label>Race</Form.Label>
+                                            <Form.Control type="text" placeholder="None" />
+                                        </Form.Group>
+                                        <Form.Group controlId="patientLanguage">
+                                            <Form.Label>Language</Form.Label>
+                                            <Form.Control type="text" placeholder="None" />
+                                        </Form.Group>
+                                        <Form.Group controlId="patientPhone">
+                                            <Form.Label>Phone Number</Form.Label>
+                                            <Form.Control type="text" placeholder="None" />
+                                        </Form.Group>
+                                        <Form.Group controlId="patientAddress">
+                                            <Form.Label>Address</Form.Label>
+                                            <Form.Control type="text" placeholder="None" />
+                                        </Form.Group>
+                                        </Accordion.Body>
+                                    </Accordion.Item>
+                                </Accordion>
+                            </div>
                         </Card.Body>
-                        </Card>
-                    </Card.Body>
                     </Card>
                 </Col>
             </Row>
@@ -157,7 +287,25 @@ function PatientChart(props) {
                                     <Tabs defaultActiveKey="pre-existing">
                                         <Tab eventKey="pre-existing" title="Pre-Existing">
                                             <Card.Body>
-                                            <p>Pre-Existing Information</p>
+                                                <div style={{ height: '200px', overflowY: 'scroll' }}>
+                                                <ListGroup variant='flush'>
+                                                    {PreExistingList.map((item, index) => (
+                                                        <ListGroup.Item
+                                                        key={index}
+                                                        onDoubleClick={() => handleListChange(PreExistingList, setPreExistingList, 'edit', index)}
+                                                        >
+                                                        {item}
+                                                        <span
+                                                            className='float-right text-danger'
+                                                            style={{position: 'absolute', top: '50%', transform: 'translateY(-50%)', right: '5px', cursor: 'pointer'}}
+                                                            onClick={() => handleListChange(PreExistingList, setPreExistingList, 'delete', index)}
+                                                        >
+                                                            &times;
+                                                        </span>
+                                                        </ListGroup.Item>
+                                                    ))}
+                                                </ListGroup>
+                                                </div>
                                             </Card.Body>
                                         </Tab>
                                         <Tab eventKey="immunization" title="Immunization">
@@ -194,7 +342,7 @@ function PatientChart(props) {
                 <Col md={4}>
                     <Card style={{height:'100%'}}>
                     <Card.Header>
-                        <h3>Other Info</h3>
+                        <h3>SHOULD WE PUT TREATMENTS HERE!</h3>
                     </Card.Header>
                     <Card.Body>
                         <Card>
@@ -210,7 +358,7 @@ function PatientChart(props) {
                 <Col>
                     <Card style={{width:'100%'}}>
                         <Card.Header>
-                            <h3>Idk something else?</h3>
+                            <h3>NOTES; UPLOAD OF DOCS???</h3>
                         </Card.Header>
                         <Card.Body>
                             <h3>more stuff; uploaded documents, attached things, etc</h3>
