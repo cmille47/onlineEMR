@@ -1,0 +1,19 @@
+1,1,2023-02-03,None,Cleaning/Checkup,cavities of #19 #20,,,1,"5' 3""",120,Scheduled cavity procedure in 1 week
+1,2,2023-02-10,Cavity,Procedure,None,1,1,1,"5' 3""",120,Looks good
+2,1,2023-04-05,Toothache,Emergency,Infected tooth,,,2,"5' 10""",160,Prescribed antibiotics
+3,1,2023-04-12,None,Checkup,None,,,3,"5' 7""",150,
+4,1,2023-05-02,Broken Tooth,Procedure,None,,,2,6' 1,175,Walk-in Procedure
+1,3,2023-05-15,Teeth Whitening,Cosmetic,None,1,2,1,"5' 3""",120,
+2,2,2023-06-01,None,Checkup,None,2,2,2,"5' 10""",160,Watch back molars. Softening
+1,4,2023-07-10,None,Cleaning,None,1,3,1,"5' 3""",130,
+2,3,2023-08-05,Gum Pain,Emergency,Gum infection,2,2,2,"5' 10""",160,Prescribed antibiotics and scheduled deep cleaning
+5,1,2023-08-25,None,Checkup,None,,,2,"5' 6""",135,
+6,1,2023-09-05,None,Checkup,None,,,3,"6' 2""",190,
+7,1,2023-09-15,Tooth Pain,Emergency,Impacted wisdom tooth,,,2,"5' 8""",160,Prescribed pain medication and scheduled wisdom tooth extraction
+8,1,2023-10-02,None,Checkup,None,,,1,"5' 5""",125,
+9,1,2023-10-19,None,Cleaning,None,,,2,"5' 4""",140,
+7,2,2023-10-23,Wisdom Tooth,Surgery,None,7,1,2,"5' 8""",160,no issues
+9,2,2023-10-19,None,Cleaning,None,,,2,"5' 4""",140,
+10,1,2023-11-07,Toothache,Emergency,Infected tooth,,,3,"5' 9""",150,Prescribed antibiotics and scheduled root canal
+10,2,2023-11-14,Toothache,Procedure,None,10,1,3,"5' 9""",150,
+2,4,2023-11-17,Broken Crown,Procedure,None,2,3,2,"5' 10""",160,Hard of hearing

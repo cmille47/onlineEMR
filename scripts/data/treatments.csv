@@ -1,0 +1,9 @@
+1,1,2,procedure,cavity filling #19,1 hr,yes
+2,1,2,procedure,cavity filling #20,1 hr,yes
+3,2,1,prescription,infected tooth #32 prescribed antibiotics,2 wk,yes
+4,4,1,procedure,broken tooth #21,0.5 hr,yes
+5,2,3,prescription,antiobiotics for gums,2 wk,yes
+6,7,2,surgery,wisdom tooth removal,2 hr,yes
+7,10,1,prescription,infected tooth #3 prescribed antibiotics,1 wk,no
+8,10,2,surgery,root canal #3,2 hr,yes
+9,2,4,procedure,broken crown #13,1hr,yes
