@@ -24,19 +24,19 @@ function Dashboard(props) {
   const navigate = useNavigate();
   const name = location?.state?.name;
 
-  // useEffect(() => {
-  //   if (name == null) {
-  //     setIsLoggedIn(false);
-  //     navigate('/auth');
-  //   } else {
-  //     setIsLoggedIn(true);
-  //   }
-  //   setIsRendered(true);
-  // }, [name, navigate]);
+  useEffect(() => {
+    if (name == null) {
+      setIsLoggedIn(false);
+      navigate('/auth');
+    } else {
+      setIsLoggedIn(true);
+    }
+    setIsRendered(true);
+  }, [name, navigate]);
 
-  // if (!isRendered) {
-  //   return null;
-  // }
+  if (!isRendered) {
+    return null;
+  }
 
   const handleSearchChange = (e) => {
     const query = e.target.value;
