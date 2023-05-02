@@ -17,7 +17,6 @@ function PatientChart(props) {
     // more general things
     const [visitResults, setVisitResults] = useState([]);
     const [serverData, setServerData] = useState([]);
-    const [viewingPrior, setViewingPrior] = useState(true);
     const [selectedDate, setSelectedDate] = useState('View Prior Visit');
 
     // top left part
@@ -74,6 +73,9 @@ function PatientChart(props) {
     const [medsList, setMedsList] = useState([]);
     const [medsChanged, setMedsChanged] = useState(false);
 
+    const [allergiesList, setAllergiesList] = useState([]);
+    const [allergiesChanged, setAllergiesChanged] = useState(false);
+
     // bottom right treatment pt
     const [treatments, setTreatments] = useState([]);
     const [newTreatment, setNewTreatment] = useState({
@@ -86,7 +88,7 @@ function PatientChart(props) {
         PATIENT_ID: ''
       });
 
-    const [treatmentChanged, setTreatmentChanged] = useState(false);
+    const [treatmentsChanged, setTreatmentsChanged] = useState(false);
 
 
     // handle date selection for getting data for a specific visit
@@ -101,9 +103,18 @@ function PatientChart(props) {
     // BUTTON HANDLE FOR NEW VISIT IF CLICKED
     const handleNewVisit = () => {
         const date = new Date();
-        const dateString = date.toISOString().split('T')[0];
-        setViewingPrior(false);
-        console.log(dateString);
+        let dateString = date.toISOString().split('T')[0];        
+        //dateString = 'test_date';
+        const past_visit_id = visitData.VISIT_ID;
+        const new_visit_id = visitResults.length + 1
+        setVisitData((prevVisitData) => ({
+            ...prevVisitData,
+            VISIT_DATE: dateString,
+            VISIT_ID: new_visit_id,
+            REF_VISIT_ID: past_visit_id,
+        }));
+        setSelectedDate(dateString);
+        setVisitUpdated(true);
     };
 
     // if patient has prior visits, fetch whatever selected date is and fill in
@@ -122,50 +133,55 @@ function PatientChart(props) {
         })
     };
 
-    function postrequest(e){
+    const postrequest = (e) => {
         e.preventDefault();
-        fetch('http://3.95.80.50:8005/log-in/chart2.php?', {
+        fetch('http://3.95.80.50:8005/patientchart/push2db.php', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            // patiend_id: patientID,
-            // BREAK IT UP INTO EACH TABLE INSERT REQUIRED
-            // WE HAVE TO DO THIS IN A UNIQUE WAY
-            // I BELIEVE THIS SHOULD WORK BEST:
-            // IF A FIELD IS EDITED SET SOME FLAG TO INDICATE X TABLE NEEDS TO BE
-            // UPDATED. IF NOT THEN SET FLAG TO FALSE.
-            // SEND DATA AND FLAGS ALONG HERE. CHECK FLAGS IN BACKEND
-            // THEN HERE COMES SOME WILD SHIT
-
-            // SUBTABLES ARE A BITCH HERE
-            // EASY ENOUGH TO GO THROUGH AND ADD ANY NEW THINGS BUT DELETING WILL BE TOUGH. 
-            // NO UPDATING? DELETE AND CREATE NEW ONLY???
-            // ANYWAYS: PASS ALONG DELETION LIST? I THINK THIS WOULD WORK THE BEST. 
-            // ITERATE THROUGH AND DELETE WHATEVER
-            // GO THROUGH THE LIST; QUERY EACH ENTRY ESSENTIALLY. IF IT EXISTS; DO NOTHING
-            // IF NOT CREATE NEW ENTRY FOR THAT VALUE PAIR. 
-
-            // ^^^ THIS WILL HANDLE ALL FAMILY HISTORY, IMMUNIZATIONS, MEDS, ETC ^^^
-
-            // FOR TREATMENTS TABLE, JUST DO FLAG. 
-
-
-            // TREATMENTS TABLE
-            
+            updateVisit: visitUpdated,
+            visitData : visitData,
+            updatePatient: patientChanged,
+            patientData: patientGenerics,
+            updatePreExisting: preExistingChanged,
+            preExistingData: PreExistingList,
+            updateTreatments: treatmentsChanged,
+            treatmentData: treatments,
+            updateImmunizations: immunizationChanged,
+            immunizationList: immunizationList,
+            updateObstetric: obstetricChanged,
+            obstetricData: obstetricList,
+            updateAllergies: allergiesChanged,
+            allergiesData: allergiesList,
+            updateMeds: medsChanged,
+            medData: medsList,
+            updateFamily: familyChanged,
+            familyData: familyHistoryList,
           })
         })
-        .then((response) => {
-          return response.json();
-        })
-    }
+        .then(response => response.json())
+        .then(data => data.forEach(value => console.log(value)))
+        .catch(error => console.log(error));
+
+        // reset change variables
+        setVisitUpdated(false);
+        setPatientChanged(false);
+        setPreExistingChanged(false);
+        setTreatmentsChanged(false);
+        setImmunizationChanged(false);
+        setObstetricChanged(false);
+        setAllergiesChanged(false);
+        setMedsChanged(false);
+        setFamilyChanged(false);
+      }
 
     // if patient_id provided, fetch request to get_all_visit info.
     // need to see how to check what patient_id is/if passed along...
     const get_all_visits = (patient_id) => {
         return new Promise((resolve, reject) => {
-            fetch(`http://3.95.80.50:8005/patientchart/chart2.php?endpoint=get_all_visits&patient_id=${patient_id}`, {
+            fetch(`http://3.95.80.50:8005/patientchart/chart3.php?endpoint=get_all_visits&patient_id=${patient_id}`, {
                 method: 'GET'
             })
             .then(response => response.json())
@@ -198,17 +214,7 @@ function PatientChart(props) {
         if (serverData.length > 0){
 
             setVisitData(serverData[0]);
-
-            // need to remove some quotes/apostropohes from height string
-            const result = serverData[0].HEIGHT.replace(/"(\d+'\s*\d)""/g, "$1");
-            setVisitData(prevData => {
-                return {
-                    ...prevData,
-                    HEIGHT: result
-                };
-            });
-
-            setTreatments(serverData.slice(7));
+            setTreatments(serverData.slice(8));
             newTreatment.VISIT_ID = serverData[0].VISIT_ID;
             newTreatment.PATIENT_ID = serverData[0].PATIENT_ID;
             setNewTreatment(newTreatment);
@@ -217,25 +223,33 @@ function PatientChart(props) {
             setImmunizationList(serverData[3]);
             setMedsList(serverData[4]);
             setObstetricList(serverData[5]);
-            setPreExistingList(serverData[6])
-                     //setSelectedDoctor(serverData[0].DOCTOR_ID);
+            setPreExistingList(serverData[6]);
+            setAllergiesList(serverData[7]);
         }
     }, [serverData]);
 
-    console.log(visitResults);
-    console.log(serverData);
-    console.log(visitData);
-    console.log(patientGenerics);
-    console.log(familyHistoryList);
-    //console.log(treatments);
-
-
-    // flag for the post requests later. will be sent to server.
-    const [treatmentsChanged, setTreatmentsChanged] = useState(false);
+    // console.log(visitUpdated);
+    // console.log(visitResults);
+    // console.log(serverData);
+    // console.log(visitData);
+    // console.log(patientChanged);
+    // console.log(patientGenerics);
+    // console.log(familyHistoryList);
+    // console.log(treatments);
+    // console.log(PreExistingList);
+    // console.log(preExistingChanged);
+    // console.log(treatments);
+    // console.log(treatmentsChanged);
+    // console.log(immunizationList);
+    // console.log(immunizationChanged);
+    // console.log(obstetricList);
+    // console.log(obstetricChanged);
+    // console.log(medsChanged);
+    // console.log(medsList);
 
     // handles changes to each of the fields of any treatment (including new one)
     const handleTreatmentsChange = (index, field, value) => {
-        if (index > 0){
+        if (index > -1){
             setTreatments(prevTreatments => {
                 const newTreatments = [...prevTreatments];
                 newTreatments[index][field] = value;
@@ -253,6 +267,10 @@ function PatientChart(props) {
 
     // handles the creation of a new treatment by pressing the button. adds it to the treatment list object
     const handleNewTreatment = () => {
+        setNewTreatment(prevNewTreatment => ({
+            ...prevNewTreatment,
+            VISIT_ID: visitData['VISIT_ID']
+        }));
         setTreatments(prevTreatments => [...prevTreatments, newTreatment]);
         setNewTreatment({
             KEYWORD_DESC: '',
@@ -290,13 +308,15 @@ function PatientChart(props) {
 
     // handles the bottom left list stuff changing. large bc its like 5 tables combined
     const handleListChange = (listItems, setListItems, action, index) => {
+        let newValue = null;
+        let newList = null; 
         switch(action) {
             case 'edit':
                 // prompt user for new value and update list
-                var newValue = prompt('Enter new value:');
-                var newList = [...listItems];
+                newValue = prompt('Enter new value:');
+                newList = [...listItems];
                 if (newValue !== null ){
-                    if (listItems == familyHistoryList){
+                    if (listItems === familyHistoryList){
                         while (!(newValue.includes(":"))){
                             newValue = prompt("Incorrect Format. (Relative: Affliction)");
                         }
@@ -305,7 +325,7 @@ function PatientChart(props) {
                         newList[index].RELATIVE1 = parts[0];
                         setFamilyChanged(true);
                     }
-                    else if(listItems == medsList){
+                    else if(listItems === medsList){
                         while (!(newValue.includes(": "))){
                             newValue = prompt("Incorrect formatting (Medication: ActiveStatus)");
                         }
@@ -314,7 +334,7 @@ function PatientChart(props) {
                         newList[index].ACTIVE = parts[1];  
                         setMedsChanged(true);
                     }
-                    else if(listItems == obstetricList){
+                    else if(listItems === obstetricList){
                         while (!(newValue.includes(": "))){
                             newValue = prompt("Incorrect formatting (Start date (yyyy-mm-dd): End Date (yyyy-mm-dd))");
                         }
@@ -323,13 +343,17 @@ function PatientChart(props) {
                         newList[index].ENDDATE = parts[1];  
                         setObstetricChanged(true);
                     }
-                    else if (listItems == PreExistingList){
+                    else if (listItems === PreExistingList){
                         newList[index].CONDITION = newValue;
                         setPreExistingChanged(true);
                     }
-                    else if (listItems == immunizationList){
+                    else if (listItems === immunizationList){
                         newList[index].IMMUNIZATION = newValue;
                         setImmunizationChanged(true);
+                    }
+                    else if (listItems === allergiesList){
+                        newList[index].ALLERGY = newValue;
+                        setAllergiesChanged(true);
                     }
                 }
                 setListItems(newList);
@@ -338,12 +362,33 @@ function PatientChart(props) {
                 // remove item from list
                 const filteredList = listItems.filter((item, i) => i !== index);
                 setListItems(filteredList);
+                if (listItems === familyHistoryList){
+                    setFamilyChanged(true);
+                }
+                else if(listItems === medsList){
+                    setMedsChanged(true);
+                }
+                else if(listItems === PreExistingList){
+                    setPreExistingChanged(true);
+                }
+                else if(listItems === allergiesList){
+                    setAllergiesChanged(true);
+                }
+                else if(listItems === immunizationList){
+                    setImmunizationChanged(true);
+                }
+                else if(listItems === obstetricList){
+                    setObstetricChanged(true);
+                }
+                else if(listItems === socialList){
+                    setSocialChanged(true);
+                }
                 break;
             case 'add':
-                var newValue = prompt('Enter new value:');
-                var newList = [...listItems];
+                newValue = prompt('Enter new value:');
+                newList = [...listItems];
                 if (newValue !== null){
-                    if (listItems == familyHistoryList){
+                    if (listItems === familyHistoryList){
                         while (!(newValue.includes(":"))){
                             newValue = prompt("Incorrect Format. (Relative: Affliction)");
                             if (newValue === null){
@@ -357,9 +402,9 @@ function PatientChart(props) {
                         newList.push({PATIENT_ID: visitData.PATIENT_ID, AFFLICTION: parts[1], RELATIVE1: parts[0] });
                         setFamilyChanged(true);
                     }
-                    else if(listItems == medsList){
+                    else if(listItems === medsList){
                         while (!(newValue.includes(": "))){
-                            newValue = prompt("Incorrect formatting (Medication: ActiveStatus)");
+                            newValue = prompt("Incorrect formatting (Medication: ActiveStatus(yes/no))");
                             if (newValue === null){
                                 break;
                             }
@@ -371,7 +416,7 @@ function PatientChart(props) {
                         newList.push({PATIENT_ID: visitData.PATIENT_ID, MEDICATION: parts[0], ACTIVE: parts[1]});
                         setMedsChanged(true);
                     }
-                    else if(listItems == obstetricList){
+                    else if(listItems === obstetricList){
                         while (!(newValue.includes(": "))){
                             newValue = prompt("Incorrect formatting (Start date (yyyy-mm-dd): End Date (yyyy-mm-dd))");
                             if (newValue === null){
@@ -385,13 +430,17 @@ function PatientChart(props) {
                         newList.push({PATIENT_ID: visitData.PATIENT_ID, STARTDATE: parts[0], ENDDATE: parts[1]});
                         setObstetricChanged(true);
                     }
-                    else if (listItems == PreExistingList){
+                    else if (listItems === PreExistingList){
                         newList.push({PATIENT_ID: visitData.PATIENT_ID, CONDITION: newValue});
                         setPreExistingChanged(true);
                     }
-                    else if (listItems == immunizationList){
+                    else if (listItems === immunizationList){
                         newList.push({PATIENT_ID: visitData.PATIENT_ID, IMMUNIZATION: newValue});
                         setImmunizationChanged(true);
+                    }
+                    else if (listItems === allergiesList){
+                        newList.push({PATIENT_ID: visitData.PATIENT_ID, ALLERGY: newValue});
+                        setAllergiesChanged(true);
                     }
                 }
                 setListItems(newList);
@@ -562,7 +611,7 @@ function PatientChart(props) {
                                                 </Col>
                                                 <Col>
                                                     <Form.Group controlId="HEIGHT">
-                                                        <Form.Label>Weight</Form.Label>
+                                                        <Form.Label>Height</Form.Label>
                                                         <Form.Control type="text" 
                                                             placeholder="None" 
                                                             value = {visitData.HEIGHT} 
@@ -584,7 +633,6 @@ function PatientChart(props) {
                                                 <Form.Control type="text" 
                                                     placeholder="XXX-XXX-XXXX" 
                                                     value = {patientGenerics.PHONE} 
-                                                    readOnly={patientGenerics.PATIENT_ID !== null}
                                                     onChange = {(e) => updatePatientInfo('PHONE', e.target.value)}
                                                 />
                                             </Form.Group>
@@ -765,7 +813,7 @@ function PatientChart(props) {
                                                             key={index}
                                                             onDoubleClick={() => handleListChange(medsList, setMedsList, 'edit', index)}
                                                             >
-                                                            {`${item.MEDICATION}: active? ${item.ACTIVE}`}
+                                                            {`${item.MEDICATION}: ${item.ACTIVE.toLowerCase().includes('yes') ? 'active' : 'not active'}`}
                                                             <span
                                                                 className='float-right text-danger'
                                                                 style={{position: 'absolute', top: '50%', transform: 'translateY(-50%)', right: '5px', cursor: 'pointer'}}
@@ -776,6 +824,32 @@ function PatientChart(props) {
                                                             </ListGroup.Item>
                                                         ))}
                                                         <Button onClick={() => handleListChange(medsList, setMedsList, 'add', 0)}>
+                                                            Add Item
+                                                        </Button>
+                                                    </ListGroup>
+                                                </div>
+                                            </Card.Body>
+                                        </Tab>
+                                        <Tab eventKey="allergies" title="Allergies">
+                                            <Card.Body>
+                                                <div style={{ height: '200px', overflowY: 'scroll' }}>
+                                                    <ListGroup variant='flush'>
+                                                        {allergiesList.map((item, index) => (
+                                                            <ListGroup.Item
+                                                            key={index}
+                                                            onDoubleClick={() => handleListChange(allergiesList, setAllergiesList, 'edit', index)}
+                                                            >
+                                                            {`${item.ALLERGY}`}
+                                                            <span
+                                                                className='float-right text-danger'
+                                                                style={{position: 'absolute', top: '50%', transform: 'translateY(-50%)', right: '5px', cursor: 'pointer'}}
+                                                                onClick={() => handleListChange(allergiesList, setAllergiesList, 'delete', index)}
+                                                            >
+                                                                &times;
+                                                            </span>
+                                                            </ListGroup.Item>
+                                                        ))}
+                                                        <Button onClick={() => handleListChange(allergiesList, setAllergiesList, 'add', 0)}>
                                                             Add Item
                                                         </Button>
                                                     </ListGroup>

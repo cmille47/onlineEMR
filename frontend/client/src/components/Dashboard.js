@@ -42,7 +42,7 @@ function Dashboard(props) {
     const query = e.target.value;
     setSearchQuery(query);
     if (query.length > 0) {
-      fetch(`http://3.95.80.50:8005/dashboard/search2.php?q=${query}`, {
+      fetch(`http://3.95.80.50:8005/dashboard/search2.php?name=${query}`, {
         method: 'GET'
       })
       .then(response => response.json())
