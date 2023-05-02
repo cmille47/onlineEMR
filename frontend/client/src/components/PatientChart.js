@@ -10,7 +10,8 @@ import {
     Button, 
     Form,
     Accordion,
-    ListGroup} from 'react-bootstrap';
+    ListGroup,
+    Table} from 'react-bootstrap';
 
 // create patient chart page
 function PatientChart(props) {
@@ -67,7 +68,14 @@ function PatientChart(props) {
     const [obstetricList, setObstetricList] = useState([]);
     const [obstetricChanged, setObstetricChanged] = useState(false);
 
-    const [socialList, setSocialList] = useState([]);
+    const [socialList, setSocialList] = useState({
+        ALCOHOL: '',
+        EXCERCISE: '',
+        MARRIAGE: '',
+        OCCUPATIN:'',
+        SMOKING:''
+    });
+
     const [socialChanged, setSocialChanged] = useState(false);
 
     const [medsList, setMedsList] = useState([]);
@@ -88,6 +96,7 @@ function PatientChart(props) {
         PATIENT_ID: ''
       });
 
+    const [deletedTreatments, setDeletedTreatments] = useState([]);
     const [treatmentsChanged, setTreatmentsChanged] = useState(false);
 
 
@@ -113,6 +122,18 @@ function PatientChart(props) {
             VISIT_ID: new_visit_id,
             REF_VISIT_ID: past_visit_id,
         }));
+        setNewTreatment(
+            {
+                KEYWORD_DESC: '',
+                TREATMENT_TYPE: '',
+                DURATION: '',
+                SUCCESS: false,
+                TREATMENT_ID: '',
+                VISIT_ID: new_visit_id,
+                PATIENT_ID: ''
+              }
+        );
+        setTreatments([]);
         setSelectedDate(dateString);
         setVisitUpdated(true);
     };
@@ -149,6 +170,7 @@ function PatientChart(props) {
             preExistingData: PreExistingList,
             updateTreatments: treatmentsChanged,
             treatmentData: treatments,
+            deleteTreatments: deletedTreatments,
             updateImmunizations: immunizationChanged,
             immunizationList: immunizationList,
             updateObstetric: obstetricChanged,
@@ -159,6 +181,8 @@ function PatientChart(props) {
             medData: medsList,
             updateFamily: familyChanged,
             familyData: familyHistoryList,
+            updateSocial: socialChanged,
+            socialData: socialList,
           })
         })
         .then(response => response.json())
@@ -175,6 +199,7 @@ function PatientChart(props) {
         setAllergiesChanged(false);
         setMedsChanged(false);
         setFamilyChanged(false);
+        setSocialChanged(false);
       }
 
     // if patient_id provided, fetch request to get_all_visit info.
@@ -214,7 +239,7 @@ function PatientChart(props) {
         if (serverData.length > 0){
 
             setVisitData(serverData[0]);
-            setTreatments(serverData.slice(8));
+            setTreatments(serverData.slice(9));
             newTreatment.VISIT_ID = serverData[0].VISIT_ID;
             newTreatment.PATIENT_ID = serverData[0].PATIENT_ID;
             setNewTreatment(newTreatment);
@@ -225,8 +250,11 @@ function PatientChart(props) {
             setObstetricList(serverData[5]);
             setPreExistingList(serverData[6]);
             setAllergiesList(serverData[7]);
+            setSocialList(serverData[8]);
         }
     }, [serverData]);
+
+    // console.log(socialList);
 
     // console.log(visitUpdated);
     // console.log(visitResults);
@@ -235,10 +263,11 @@ function PatientChart(props) {
     // console.log(patientChanged);
     // console.log(patientGenerics);
     // console.log(familyHistoryList);
-    // console.log(treatments);
+    console.log(treatments);
     // console.log(PreExistingList);
     // console.log(preExistingChanged);
     // console.log(treatments);
+    // console.log(deletedTreatments);
     // console.log(treatmentsChanged);
     // console.log(immunizationList);
     // console.log(immunizationChanged);
@@ -265,12 +294,18 @@ function PatientChart(props) {
         }
       };
 
+    const handleTreatmentDeletion = (index) => {
+        const newTreatments = [...treatments];
+        const deletedTreatment = newTreatments.splice(index, 1)[0];
+        const newDeleted = [...deletedTreatments];
+        newDeleted.push(deletedTreatment.TREATMENT_ID);
+        setDeletedTreatments(newDeleted);
+        setTreatments(newTreatments);
+        setTreatmentsChanged(true);
+    };
+
     // handles the creation of a new treatment by pressing the button. adds it to the treatment list object
     const handleNewTreatment = () => {
-        setNewTreatment(prevNewTreatment => ({
-            ...prevNewTreatment,
-            VISIT_ID: visitData['VISIT_ID']
-        }));
         setTreatments(prevTreatments => [...prevTreatments, newTreatment]);
         setNewTreatment({
             KEYWORD_DESC: '',
@@ -306,7 +341,16 @@ function PatientChart(props) {
         setVisitUpdated(true);
     };
 
-    // handles the bottom left list stuff changing. large bc its like 5 tables combined
+    // change social
+    const handleCellClick = (social_key) => {
+        const newSocial = prompt('Enter new value:');
+        if (newSocial !== null){
+            setSocialList((prevInfo) => ({ ...prevInfo, [social_key]: newSocial }));
+            setSocialChanged(true);
+        }
+      };
+
+    // handles the bottom left list stuff changing. a little gross but effective
     const handleListChange = (listItems, setListItems, action, index) => {
         let newValue = null;
         let newList = null; 
@@ -379,9 +423,6 @@ function PatientChart(props) {
                 }
                 else if(listItems === obstetricList){
                     setObstetricChanged(true);
-                }
-                else if(listItems === socialList){
-                    setSocialChanged(true);
                 }
                 break;
             case 'add':
@@ -555,7 +596,7 @@ function PatientChart(props) {
                                 </Col>
                                 <Col>
                                     <Dropdown onSelect={(key) => updatePatientInfo('GENDER', key)}>
-                                        <Dropdown.Toggle disabled={patientGenerics.PATIENT_ID !== null} style={{ backgroundColor: '#f8f9fa', borderColor: '#f8f9fa', color: '#212529' }}>
+                                        <Dropdown.Toggle style={{ backgroundColor: '#f8f9fa', borderColor: '#f8f9fa', color: '#212529' }}>
                                             {patientGenerics.GENDER}                                            
                                         </Dropdown.Toggle>
                                         <Dropdown.Menu>
@@ -571,7 +612,6 @@ function PatientChart(props) {
                                 <Form.Control type="text" 
                                     placeholder="None" 
                                     value = {patientGenerics.FIRST_NAME} 
-                                    readOnly={patientGenerics.PATIENT_ID !== null}
                                     onChange = {(e) => updatePatientInfo('FIRST_NAME', e.target.value)}
                                 />
                             </Form.Group>
@@ -580,7 +620,6 @@ function PatientChart(props) {
                                 <Form.Control type="text" 
                                     placeholder="None" 
                                     value = {patientGenerics.LAST_NAME} 
-                                    readOnly={patientGenerics.PATIENT_ID !== null}
                                     onChange = {(e) => updatePatientInfo('LAST_NAME', e.target.value)}
                                 />
                             </Form.Group>
@@ -589,7 +628,6 @@ function PatientChart(props) {
                                 <Form.Control type="text" 
                                     placeholder="yyyy-mm-dd" 
                                     value = {patientGenerics.DOB} 
-                                    readOnly={patientGenerics.PATIENT_ID !== null}
                                     onChange = {(e) => updatePatientInfo('DOB', e.target.value)}
                                 />
                             </Form.Group>
@@ -624,7 +662,6 @@ function PatientChart(props) {
                                                 <Form.Label>Race</Form.Label>
                                                 <Form.Control type="text" 
                                                     value = {patientGenerics.RACE} 
-                                                    readOnly={patientGenerics.PATIENT_ID !== null}
                                                     onChange = {(e) => updatePatientInfo('RACE', e.target.value)}
                                                 />
                                             </Form.Group>
@@ -640,7 +677,6 @@ function PatientChart(props) {
                                                 <Form.Label>Preferred Language</Form.Label>
                                                 <Form.Control type="text" 
                                                     value = {patientGenerics.PREF_LANGUAGE} 
-                                                    readOnly={patientGenerics.PATIENT_ID !== null}
                                                     onChange = {(e) => updatePatientInfo('PREF_LANGUAGE', e.target.value)}
                                                 />
                                             </Form.Group>
@@ -801,7 +837,37 @@ function PatientChart(props) {
                                         </Tab>
                                         <Tab eventKey="social" title="Social">
                                             <Card.Body>
-                                            <p>Social Information</p>
+                                                <Table striped bordered hover>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Alcohol Use</th>
+                                                            <th>Excercise</th>
+                                                            <th>Martial Status</th>
+                                                            <th>Occupation</th>
+                                                            <th>Smoking Use</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td onDoubleClick={() => handleCellClick('ALCOHOL')}>
+                                                                {socialList.ALCOHOL ? socialList.ALCOHOL : 'NONE'}
+                                                            </td>
+                                                            <td onDoubleClick={() => handleCellClick('EXERCISE')}>
+                                                                {socialList.EXERCISE ? socialList.EXERCISE : 'NONE'}
+                                                            </td>
+                                                            <td onDoubleClick={() => handleCellClick('MARRIAGE')}>
+                                                                {socialList.MARRIAGE ? socialList.MARRIAGE : 'NONE'}
+                                                            </td>
+                                                            <td onDoubleClick={() => handleCellClick('OCCUPATION')}>
+                                                                {socialList.OCCUPATION ? socialList.OCCUPATION : 'NONE'}
+                                                            </td>
+                                                            <td onDoubleClick={() => handleCellClick('SMOKING')}>
+                                                                {socialList.SMOKING ? socialList.SMOKING : 'NONE'}
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </Table>
+                                                <h6>Double Click to Edit Any Value</h6>
                                             </Card.Body>
                                         </Tab>
                                         <Tab eventKey="Medications" title="Medications">
@@ -896,6 +962,7 @@ function PatientChart(props) {
                                                     </Col>
                                                 </Row>
                                             </Form.Group>
+                                            <Button onClick={(index) => handleTreatmentDeletion(index)}>Delete Treatment</Button>
                                         </Accordion.Body>
                                     </Accordion.Item>
                                 ))}
